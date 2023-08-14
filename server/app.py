@@ -1,6 +1,14 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, make_response
 import base64
 from datetime import datetime
+from enum import IntEnum
+
+
+class HTTP_CODE(IntEnum):
+    OK = 200  # Let's goooo
+    BAD_REQUEST = 400  # Request is not what we accepted
+    NOT_FOUND = 404  # Not detected
+    NOT_ACCEPTABLE = 406  # Detected but not approved
 
 
 app = Flask(__name__)
@@ -8,50 +16,36 @@ app = Flask(__name__)
 
 def parse_json(json_data):
     try:
-        id = json_data.get('id')
-        time = json_data.get('time')
+        node_id = json_data.get('node_id')
         image_base64 = json_data.get('image')
+        # change the time to your format. firebase and stuff...
+        time = str(datetime.now())
 
-        if id is None or not isinstance(id, int):
-            return {'error': 'Invalid or missing "id" field'}, 400
-
-        if time is None:
-            return {'error': 'Missing "time" field'}, 400
-        try:
-            time = datetime.fromisoformat(time)
-        except ValueError:
-            return {'error': 'Invalid "time" format'}, 400
+        if node_id is None:
+            return 'Missing "id" field', HTTP_CODE.BAD_REQUEST
 
         if image_base64 is None:
-            return {'error': 'Missing "image" field'}, 400
+            return 'Missing "image" field',  HTTP_CODE.BAD_REQUEST
         try:
-            image_data = base64.b64decode(image_base64)
+            # just for now TODO:base64.b64decode(image_base64)
+            image_data = "image"
         except ValueError:
-            return {'error': 'Invalid base64 encoded "image" data'}, 400
+            return 'Invalid base64 encoded "image" data', HTTP_CODE.BAD_REQUEST
 
-        # Process the parsed data here
-        response = {
-                    'message': 'JSON data received and parsed successfully',
-                    'id': id,
-                    'time': time,
-                    'image': image_base64
-                    }
-        return response, 200
+        # This will only contain the parking number when image detected correctly, for example 69
+        response = "69"
+        return response, HTTP_CODE.OK
     except Exception as e:
-        return {'error': str(e)}, 400
+        return str(e), HTTP_CODE.BAD_REQUEST
 
 
-@app.route('/json_endpoint', methods=['POST'])
+@app.route('/', methods=['POST'])
 def json_endpoint():
-    try:
-        data = request.get_json()  # Get JSON data from the request
-        response, status_code = parse_json(data)
-        if status_code == 200:
-            return render_template('result.html', json_data=response)
-        else:
-            return jsonify(response), status_code
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
+    json_data = request.get_json()  # Get JSON data from the request
+    print(json_data)
+    str_response, status_code = parse_json(json_data)
+    response = make_response(str_response, status_code)
+    return response
 
 
 if __name__ == '__main__':
