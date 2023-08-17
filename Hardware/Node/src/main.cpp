@@ -1,79 +1,120 @@
 #include "binary_ir_sensor.h"
+#include "camera.h"
 #include "header.h"
 #include <Arduino.h>
 #include <HTTPClient.h>
 #include <WiFi.h>
 
-#define MAIN_LOOP_DELAY 500
-#define WIFI_CHECK_STATUS_DELAY 1000
+#ifdef GATE
+#include "oled_display.h"
+#else
+#include "led_strip.h"
+#endif
 
-String construct_json(const char* captured_image)
+#define MAIN_LOOP_DELAY 1000
+#define BEFORE_TAKE_SHOT_DELAY 500
+#define WIFI_CHECK_STATUS_DELAY 500
+
+String construct_image_json(const String& captured_image)
 {
-    String json_data = "{\"node_id\":\"" + String(NODE_ID) + "\",\"image\":\"" + String(captured_image) + "\"}";
-    Serial.println(json_data); // TODO: delete this later
+    String json_data = "{\"node_id\":\"" + String(NODE_ID) + "\",\"image\":\"" + captured_image + "\"}";
     return json_data;
 }
 
-String http_post_json(String json_data, t_http_codes* http_code)
+String construct_json()
+{
+    String json_data = "{\"node_id\":\"" + String(NODE_ID) + "\"}";
+    return json_data;
+}
+
+String http_post_json(String url_path, String json_data, t_http_codes* http_code_ptr)
 {
     HTTPClient http;
-    http.begin(SERVER_URL);
+    http.begin(SERVER_URL + url_path);
     http.addHeader("Content-Type", "application/json");
-    String response = "";
-    if (http_code) {
-        *http_code = (t_http_codes)http.POST(json_data);
+    t_http_codes http_code = (t_http_codes)http.POST(json_data);
+    if (http_code_ptr) {
+        *http_code_ptr = http_code;
     }
-    response = http.getString();
     Serial.print("http code: ");
-    Serial.println(*http_code);
+    Serial.println(http_code);
+    String response = http.getString();
+    http.end();
     return response;
 }
 
 void setup()
 {
     Serial.begin(115200);
+    camera_init();
+#ifdef GATE
+    oled_display_init();
+#else
+    led_strip_init();
+#endif
     binary_ir_sensor_init();
+
     WiFi.begin(SSID_NAME, SSID_PASSWORD);
     Serial.println("Connecting");
     while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
+        delay(WIFI_CHECK_STATUS_DELAY);
     }
     Serial.print("\nIP: ");
     Serial.println(WiFi.localIP());
+    http_post_json("awake", construct_json(), NULL);
 }
 
 void loop()
 {
-    bool static object_recognized = false;
     delay(MAIN_LOOP_DELAY);
+    bool static object_recognized = false;
+
     if (WiFi.status() != WL_CONNECTED) {
         delay(WIFI_CHECK_STATUS_DELAY);
         return;
     }
-    bool object_detected = binary_ir_object_detected();
-    if (!object_detected) {
-        // turn the leds to blue
-        object_recognized = false;
+
+    if (!binary_ir_object_detected()) {
+#ifdef GATE
+        oled_display_clear();
+#else
+        led_strip_set_color(CRGB::Blue);
+#endif
+        if (object_recognized) {
+            http_post_json("car-left", construct_json(), NULL);
+            object_recognized = false;
+        }
         return;
     }
     if (object_recognized) {
         return;
     }
-
+    delay(BEFORE_TAKE_SHOT_DELAY);
     Serial.println("Object detected");
-    //  take_picture();
-    //  check picture
-    //  and encode it to base64
-    String json_data = construct_json("image buffer in base64");
+
+    String base64_image;
+    if (!camera_get_base64_image(base64_image)) {
+        Serial.println("Camera capture failed");
+        return;
+    }
+
+    String json_data = construct_image_json(base64_image);
+    Serial.print("finished contructiong json, size:");
+    Serial.println(json_data.length());
+
     t_http_codes http_code;
-    String response = http_post_json(json_data, &http_code);
+    String response = http_post_json("image", json_data, &http_code);
+
     switch (http_code) {
     case HTTP_CODE_OK:
+#ifdef GATE
         // Show the parking slot in the oled->the response is the number
-        // and turn the leds to yellow
         Serial.print("Parking slot: ");
         Serial.println(response);
+        oled_display_show(response);
+#else
+        led_strip_set_color(CRGB::Yellow);
+#endif
         object_recognized = true;
         break;
     case HTTP_CODE_BAD_REQUEST:
@@ -85,10 +126,13 @@ void loop()
         // Do nothing
         break;
     case HTTP_CODE_NOT_ACCEPTABLE:
+#ifdef GATE
         // Show the parking slot in the oled->the response
         // is the X maybe
-        // TODO:Talk to Itay or Tom
-        // Turns the leds to red
+        oled_display_show("X"); // TODO:Talk to Itay or Tom
+#else
+        led_strip_set_color(CRGB::Red);
+#endif
         object_recognized = true;
         break;
     default:
