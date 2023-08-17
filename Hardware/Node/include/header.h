@@ -6,20 +6,38 @@
 #ifndef NODE_CONFIG
 #define NODE_CONFIG
 
+// Node role:
+#define GATE // A simple way to burn two different code modifications on different devices
+
+// Node config:
+#ifdef GATE
+#define NODE_ID "gate"
+#else
+#define NODE_ID "node-1"
+#endif
+
 // WIFI config:
 #define SSID_NAME "car-parking"
 #define SSID_PASSWORD "12345678"
 
 // http Server config:
-// URL shape of http://IP:PORT/
-#define SERVER_URL "http://192.168.1.57:5000"
+// URL shape of http://IP:PORT/ (the slash at the end is necessary)
+#define SERVER_URL "http://192.168.1.1:5000/"
 
-// Node details:
-#define NODE_ID "node"
+// IR Sensor config:
+#define IR_SENSOR_PIN 13
 
-// IR Sensor details:
-#define IR_SENSOR_PIN 2
+// Camera config:
 
-// Camera details:
+// Led strip config:
+#define LED_STRIP_PIN 12
+#define NUMBER_OF_LEDS 4
+
+// Oled display config:
+#define I2C_SDA_PIN 15
+#define I2C_SCL_PIN 14
+#define OLED_CURSOR_X 22
+#define OLED_CURSOR_Y 20
+#define OLED_TEXT_SIZE 5
 
 #endif
