@@ -1,8 +1,7 @@
 /**
- * This is a configuration header file for the node that includes all the necessary data.
- * To read from the sensor and send the data back to the main system for further processing.
+ * This is a configuration header file for the node that includes all the necessary config
+ * to read from the sensor/camera and send the collected data back to the main system for further processing.
  */
-
 #ifndef NODE_CONFIG
 #define NODE_CONFIG
 
@@ -28,6 +27,14 @@
 #define IR_SENSOR_PIN 13
 
 // Camera config:
+#define FRAME_SIZE FRAMESIZE_240X240
+#define JPEG_QUALITY 4 // 4 to 63 where 4 is the best quality
+#define FB_COUNT 1 // frame buffers to allocate
+#define BRIGHTNESS 0
+#define CONTRAST 2
+#define SATURATION 2
+#define HORIZONTAL_MIRROR 1
+#define VERTICAL_FLIP 1
 
 // Led strip config:
 #define LED_STRIP_PIN 12

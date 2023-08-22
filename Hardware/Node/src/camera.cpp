@@ -3,16 +3,6 @@
 #include "header.h"
 #include <base64.h>
 
-// OUR CHANGES:
-#define FRAME_SIZE FRAMESIZE_240X240
-#define JPEG_QUALITY 4 // 4 to 63 where 4 is the best quality
-#define FB_COUNT 1 // frame buffers to allocate
-#define BRIGHTNESS 0
-#define CONTRAST 2
-#define SATURATION 2
-#define HORIZONTAL_MIRROR 1
-#define VERTICAL_FLIP 1
-
 // ESP32 CAMERA HARDWARE CONFIGURATIONS:
 #define PWDN_GPIO_NUM 32
 #define RESET_GPIO_NUM -1
