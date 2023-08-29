@@ -28,7 +28,7 @@
 
 // Camera config:
 #define FRAME_SIZE FRAMESIZE_240X240
-#define JPEG_QUALITY 4 // 4 to 63 where 4 is the best quality
+#define JPEG_QUALITY 10 // 4 to 63 where 4 is the best quality
 #define FB_COUNT 1 // frame buffers to allocate
 #define BRIGHTNESS 0
 #define CONTRAST 2
