@@ -48,6 +48,7 @@ void camera_init()
     config.pin_reset = RESET_GPIO_NUM;
     config.xclk_freq_hz = 20000000;
     config.pixel_format = PIXFORMAT_JPEG;
+    config.grab_mode = CAMERA_GRAB_LATEST;
 
     // Our camera resolution
     config.frame_size = FRAME_SIZE;
@@ -69,6 +70,9 @@ bool camera_get_base64_image(String& encoded_base64_image)
 {
     camera_fb_t* fb = NULL;
     fb = esp_camera_fb_get();
+    esp_camera_fb_return(fb); // dispose the buffered image
+    fb = NULL; // reset to capture errors
+    fb = esp_camera_fb_get(); // get fresh image
     if (!fb) {
         return false;
     }
