@@ -52,9 +52,9 @@ def gate_image_handle(json_data):
 def node_image_handle(json_data):
     car_number, status_code = parse_json(json_data)
     parking_event = {"parking_number" : json_data.get('node_id'), "car_number": car_number}
-    if db.is_correct_car_entered_parking(parking_event):
-        #TODO: here put the things for the green/red lights on the node, change the status code or something
-        db.remove_parking_request(parking_event)
+    if not db.is_correct_car_entered_parking(parking_event):
+        status_code = HTTP_CODE.NOT_ACCEPTABLE
+    db.remove_parking_request(parking_event)
     db.update_parking_lots(parking_event)
     response = car_number, status_code
     return response
