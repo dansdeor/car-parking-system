@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <HTTPClient.h>
 #include <WiFi.h>
+#include <iostream>
 
 #ifdef GATE
 #include "oled_display.h"
@@ -12,8 +13,10 @@
 #endif
 
 #define MAIN_LOOP_DELAY 1000
+#define AFTER_MAIN_LOOP_DELAY 10000
 #define BEFORE_TAKE_SHOT_DELAY 500
 #define WIFI_CHECK_STATUS_DELAY 500
+#define BEFORE_RECEIVING_SERVER_RESPONSE 5000
 
 String construct_image_json(const String& captured_image)
 {
@@ -31,8 +34,10 @@ String http_post_json(String url_path, String json_data, t_http_codes* http_code
 {
     HTTPClient http;
     http.begin(SERVER_URL + url_path);
+    http.setTimeout(BEFORE_RECEIVING_SERVER_RESPONSE);
     http.addHeader("Content-Type", "application/json");
     t_http_codes http_code = (t_http_codes)http.POST(json_data);
+    delay(AFTER_MAIN_LOOP_DELAY);
     if (http_code_ptr) {
         *http_code_ptr = http_code;
     }
@@ -104,7 +109,7 @@ void loop()
 
     t_http_codes http_code;
     String response = http_post_json("image", json_data, &http_code);
-
+    //delay(AFTER_MAIN_LOOP_DELAY);
     switch (http_code) {
     case HTTP_CODE_OK:
 #ifdef GATE
@@ -136,6 +141,7 @@ void loop()
         object_recognized = true;
         break;
     default:
+        delay(BEFORE_RECEIVING_SERVER_RESPONSE);
         break;
     }
 }

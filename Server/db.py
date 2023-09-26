@@ -32,20 +32,20 @@ def add_parking_request(parking_request):
 
 def remove_parking_request(parking_request):
     db = firestore.client()
-    query = db.collection("parking-requests").where("parking_number", "==", parking_request["parking_number"])
+    query = db.collection("parking-requests").where("parking_id", "==", parking_request["parking_id"])
     for request in query.stream():
-        request.delete()
+            request.reference.delete()
 
 def is_correct_car_entered_parking(parking_request):
-    requests = firestore.client().collection("parking_requests").stream()
+    requests = firestore.client().collection("parking-requests").stream()
     for request in requests:
-        if request == parking_request:
+        if request.to_dict() == parking_request:
             return True
     return False
 
 def update_parking_lots(parking_event):
     db = firestore.client()
-    parking_number = parking_event["parking_number"]
+    parking_number = parking_event["parking_id"]
     parking_ref = db.collection("parking-lots").document(f"parking{parking_number}")
     data = {
         "current_car_plate" : parking_event["car_number"],
@@ -54,6 +54,14 @@ def update_parking_lots(parking_event):
     }
     parking_ref.update(data)
 
+def free_parking(parking_id):
+    db = firestore.client
+    parking_ref = db.collection("parking-lots").document(f"parking{parking_id}")
+    data = {
+        "current_car_plate": "-1",
+        "occupied": False
+    }
+    parking_ref.update(data)
 
 # def temp():
 #     db = firestore.client()

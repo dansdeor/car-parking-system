@@ -12,16 +12,16 @@
 #ifdef GATE
 #define NODE_ID "gate"
 #else
-#define NODE_ID "node-1"
+#define NODE_ID "24"
 #endif
 
 // WIFI config:
-#define SSID_NAME "car-parking"
-#define SSID_PASSWORD "12345678"
+#define SSID_NAME "ICST"
+#define SSID_PASSWORD "arduino123"
 
 // http Server config:
 // URL shape of http://IP:PORT/ (the slash at the end is necessary)
-#define SERVER_URL "http://192.168.1.1:5000/"
+#define SERVER_URL "http://132.68.34.22:5000/"
 
 // IR Sensor config:
 #define IR_SENSOR_PIN 13

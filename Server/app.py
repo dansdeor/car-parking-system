@@ -51,8 +51,10 @@ def gate_image_handle(json_data):
 
 def node_image_handle(json_data):
     car_number, status_code = parse_json(json_data)
-    parking_event = {"parking_number" : json_data.get('node_id'), "car_number": car_number}
+    parking_event = {"parking_id" : json_data.get('node_id'), "car_number": car_number}
+    print(f"parking event of parking number{json_data.get('node_id')} and car number {car_number}")
     if not db.is_correct_car_entered_parking(parking_event):
+        print("not valid car for this parking")
         status_code = HTTP_CODE.NOT_ACCEPTABLE
     db.remove_parking_request(parking_event)
     db.update_parking_lots(parking_event)
@@ -70,7 +72,10 @@ def awake_handle():
 @app.route('/car-left', methods=['POST'])
 def car_left_handle():
     json_data = request.get_json()
-    print(f"Node {json_data.get('node_id')}: car has left")
+    node_id = json_data.get('node_id')
+    print(f"Node {node_id}: car has left")
+    if node_id != "gate":
+        db.free_parking(node_id)
     return "", HTTP_CODE.OK
 
 
