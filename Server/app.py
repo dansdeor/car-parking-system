@@ -44,8 +44,9 @@ def parse_json(json_data):
 def gate_image_handle(json_data):
     car_number, status_code = parse_json(json_data)
     parking_id = db.get_parking()
-    db.add_parking_request({"parking_id" : parking_id, "car_number" : car_number})
+    db.add_parking_request({"parking_id": parking_id, "car_number": car_number})
     response = parking_id, status_code
+    print(f"~~~~~~~~~~~~~~~~ Your parking is {parking_id} ~~~~~~~~~~~~~~~~")
     return response
 
 
@@ -90,3 +91,4 @@ def image_handle():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
+    db.clean_db()
