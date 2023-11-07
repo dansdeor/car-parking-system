@@ -30,3 +30,6 @@ Run `python app.py`
 1. It turns out that the ESP32-CAM ADC1 pins are not accessed from the board and might be used by the Camera.
 This leaves us with the ADC2 pins, but they cannot be used if the Wifi radio is on. The solution is to read analog data when not connecting to wifi.
 THIS IS ONLY RELATED TO ANALOG IR SENSOR. BINARY DIGITAL SENSOR SHOULD WORK FINE.
+
+## Link to video:
+https://technionmail-my.sharepoint.com/:v:/g/personal/levihorvitz_campus_technion_ac_il/EQ7Tfe3fZZFFlOZuPj76RlsByq82tLGGt6u4TnVZYiqslg
