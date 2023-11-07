@@ -32,4 +32,4 @@ This leaves us with the ADC2 pins, but they cannot be used if the Wifi radio is 
 THIS IS ONLY RELATED TO ANALOG IR SENSOR. BINARY DIGITAL SENSOR SHOULD WORK FINE.
 
 ## Link to video:
-https://technionmail-my.sharepoint.com/:v:/g/personal/levihorvitz_campus_technion_ac_il/EQ7Tfe3fZZFFlOZuPj76RlsByq82tLGGt6u4TnVZYiqslg
+https://technionmail-my.sharepoint.com/:v:/g/personal/dansdeor_campus_technion_ac_il/EeqJ4sm9V3hKu7eoNHWPBPgB60h-LQffyOe5H8d2ju4AvA?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0RpcmVjdCJ9fQ&e=8m1ICF
